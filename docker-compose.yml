@@ -12,3 +12,4 @@ web:
   links:
     - db
     - redis
+  env_file: .env

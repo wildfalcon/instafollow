@@ -10,6 +10,7 @@ gem 'rspec-rails'
 gem 'jquery-rails'
 gem 'redis'
 gem 'omniauth-instagram'
+gem 'instagram'
 # gem 'turbolinks'
 gem 'jbuilder', '~> 2.0' # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'sdoc', '~> 0.4.0', group: :doc

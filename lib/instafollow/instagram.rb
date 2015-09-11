@@ -33,8 +33,8 @@ module Instafollow
 
     def self.save_as_user(instagram_user)
       u = User.where(uid: instagram_user["id"]).first_or_initialize
-      u.full_name = follow["full_name"]
-      u.username = follow["username"]
+      u.full_name = instagram_user["full_name"]
+      u.username = instagram_user["username"] 
       u.save
     end
 

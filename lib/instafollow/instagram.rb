@@ -23,7 +23,7 @@ module Instafollow
 
     def self.get_page_of_follows(uid, cursor=nil)
       config
-      follows = if cursor.blank?
+      follows = if cursor == 0
         ::Instagram.user_follows(uid)
       else
         ::Instagram.user_follows(uid, :cursor => cursor)

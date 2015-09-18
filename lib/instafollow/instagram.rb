@@ -21,6 +21,12 @@ module Instafollow
       users.select {|u| u["username"] == username}.first
     end
 
+    def self.get_detail_for_uid(uid)
+      config
+      user_hash = ::Instagram.user(uid)
+    end
+
+
     def self.get_page_of_follows(uid, cursor=nil)
       config
       follows = if cursor == 0
@@ -34,7 +40,7 @@ module Instafollow
     def self.save_as_user(instagram_user)
       u = User.where(uid: instagram_user["id"]).first_or_initialize
       u.full_name = instagram_user["full_name"]
-      u.username = instagram_user["username"] 
+      u.username = instagram_user["username"]
       u.save
     end
 
@@ -49,17 +55,6 @@ module Instafollow
       end
     end
 
-    def self.update_user(uid)
-      config
-      user = User.find_by_uid uid.to_s
-      if user.present?
-        user_hash = ::Instagram.user(uid)
-        user.follower_count = user_hash["counts"]["followed_by"]
-        user.full_name = user_hash["full_name"]
-        user.username = user_hash["username"]
-        user.save
-      end
-    end
 
     def self.follow(uid)
       config

@@ -17,13 +17,12 @@ module Instafollow
 
     def self.get_details_for_username(username)
       config
-      users = ::Instagram.user_search( username )
-      users.select {|u| u["username"] == username}.first
+      ::Instagram.user_search(username).select {|u| u["username"] == username}.first
     end
 
     def self.get_detail_for_uid(uid)
       config
-      user_hash = ::Instagram.user(uid)
+      ::Instagram.user(uid)
     end
 
 

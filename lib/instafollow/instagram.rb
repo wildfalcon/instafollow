@@ -15,7 +15,7 @@ module Instafollow
       end
     end
 
-    def self.get_user_details_from_username(username)
+    def self.get_details_for_username(username)
       config
       users = ::Instagram.user_search( username )
       users.select {|u| u["username"] == username}.first

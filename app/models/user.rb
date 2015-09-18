@@ -11,7 +11,7 @@ class User < ActiveRecord::Base
   scope :followed_before,   -> (date) { where("followed_at < ?", date) }
 
   def self.add_user_by_username!(username, influential = false)
-    user_hash = Instafollow::Instagram.get_user_details_from_username(username)
+    user_hash = Instafollow::Instagram.get_details_for_username(username)
     if user_hash.present?
       user = User.where(uid: user_hash["id"]).first_or_initialize
       user.influential = influential

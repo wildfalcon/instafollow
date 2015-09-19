@@ -15,6 +15,7 @@ class User < ActiveRecord::Base
     if user_hash.present?
       user = User.where(uid: user_hash["id"]).first_or_initialize
       user.influential = influential
+      user.update_from_instagram!
       user.save!
     else
       puts "Cound't find #{username}"

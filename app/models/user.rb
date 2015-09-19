@@ -11,10 +11,11 @@ class User < ActiveRecord::Base
   scope :followed_before,   -> (date) { where("followed_at < ?", date) }
 
   def self.add_user_by_username!(username, influential = false)
-    user_hash = Instafollow::Instagram.get_user_details_from_username(username)
+    user_hash = Instafollow::Instagram.get_details_for_username(username)
     if user_hash.present?
       user = User.where(uid: user_hash["id"]).first_or_initialize
       user.influential = influential
+      user.update_from_instagram!
       user.save!
     else
       puts "Cound't find #{username}"
@@ -23,7 +24,11 @@ class User < ActiveRecord::Base
 
   def update_from_instagram!
     begin
-      Instafollow::Instagram.update_user(uid)
+      user_hash = Instafollow::Instagram.get_detail_for_uid(uid)
+      self.follower_count = user_hash["counts"]["followed_by"]
+      self.full_name = user_hash["full_name"]
+      self.username = user_hash["username"]
+      save
     rescue
     end
   end
@@ -61,7 +66,12 @@ class User < ActiveRecord::Base
 
   def add_follows_as_users!
     begin
-      Instafollow::Instagram.add_follows_as_users(uid)
+      Instafollow::Instagram.get_follows_for_uid(uid).each do |instagram_user|
+        u = User.where(uid: instagram_user["id"]).first_or_initialize
+        u.full_name = instagram_user["full_name"]
+        u.username = instagram_user["username"]
+        u.save
+      end
     rescue
       # the error is probably Instagram::BadRequest meaning
       # I can't get this users followers. I'm ok with ignoring this for now

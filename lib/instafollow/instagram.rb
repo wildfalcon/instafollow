@@ -15,50 +15,32 @@ module Instafollow
       end
     end
 
-    def self.get_user_details_from_username(username)
+    def self.get_details_for_username(username)
       config
-      users = ::Instagram.user_search( username )
-      users.select {|u| u["username"] == username}.first
+      ::Instagram.user_search(username).select {|u| u["username"] == username}.first
     end
 
-    def self.get_page_of_follows(uid, cursor=nil)
+    def self.get_detail_for_uid(uid)
       config
-      follows = if cursor == 0
-        ::Instagram.user_follows(uid)
-      else
-        ::Instagram.user_follows(uid, :cursor => cursor)
+      ::Instagram.user(uid)
+    end
+
+    def self.get_follows_for_uid(uid)
+      config
+
+      cursor = 0
+      follows = []
+      while cursor.present? do
+        new_follows = get_page_of_follows(uid, cursor)
+        follows += new_follows
+        cursor = new_follows.pagination.next_cursor
       end
+
       follows
     end
 
-    def self.save_as_user(instagram_user)
-      u = User.where(uid: instagram_user["id"]).first_or_initialize
-      u.full_name = instagram_user["full_name"]
-      u.username = instagram_user["username"] 
-      u.save
-    end
-
-    def self.add_follows_as_users(uid)
-      cursor = 0
-
-      while cursor.present? do
-        follows = get_page_of_follows(uid, cursor)
-        follows.each {|f| save_as_user(f) }
-        cursor = follows.pagination.next_cursor
-        puts "!!!!!!!!!! #{cursor}"
-      end
-    end
-
-    def self.update_user(uid)
-      config
-      user = User.find_by_uid uid.to_s
-      if user.present?
-        user_hash = ::Instagram.user(uid)
-        user.follower_count = user_hash["counts"]["followed_by"]
-        user.full_name = user_hash["full_name"]
-        user.username = user_hash["username"]
-        user.save
-      end
+    def self.get_page_of_follows(uid, cursor=nil)
+      cursor == 0 ? ::Instagram.user_follows(uid) : ::Instagram.user_follows(uid, :cursor => cursor)
     end
 
     def self.follow(uid)

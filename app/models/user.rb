@@ -67,6 +67,7 @@ class User < ActiveRecord::Base
     begin
       Instafollow::Instagram.get_follows_for_uid(uid).each do |instagram_user|
         u = User.where(uid: instagram_user["id"]).first_or_initialize
+        u.follower_count = user_hash["counts"]["followed_by"]
         u.full_name = instagram_user["full_name"]
         u.username = instagram_user["username"]
         u.save

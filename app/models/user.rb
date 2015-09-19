@@ -24,9 +24,9 @@ class User < ActiveRecord::Base
   def update_from_instagram!
     begin
       user_hash = Instafollow::Instagram.get_detail_for_uid(uid)
-      follower_count = user_hash["counts"]["followed_by"]
-      full_name = user_hash["full_name"]
-      username = user_hash["username"]
+      self.follower_count = user_hash["counts"]["followed_by"]
+      self.full_name = user_hash["full_name"]
+      self.username = user_hash["username"]
       save
     rescue
     end

@@ -25,7 +25,7 @@ module Instafollow
       ::Instagram.user(uid)
     end
 
-    def self.add_follows_as_users(uid)
+    def self.get_follows_for_uid(uid)
       config
 
       cursor = 0

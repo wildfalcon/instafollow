@@ -25,35 +25,23 @@ module Instafollow
       ::Instagram.user(uid)
     end
 
-
-    def self.get_page_of_follows(uid, cursor=nil)
+    def self.add_follows_as_users(uid)
       config
-      follows = if cursor == 0
-        ::Instagram.user_follows(uid)
-      else
-        ::Instagram.user_follows(uid, :cursor => cursor)
+
+      cursor = 0
+      follows = []
+      while cursor.present? do
+        new_follows = get_page_of_follows(uid, cursor)
+        follows += new_follows
+        cursor = new_follows.pagination.next_cursor
       end
+
       follows
     end
 
-    def self.save_as_user(instagram_user)
-      u = User.where(uid: instagram_user["id"]).first_or_initialize
-      u.full_name = instagram_user["full_name"]
-      u.username = instagram_user["username"]
-      u.save
+    def self.get_page_of_follows(uid, cursor=nil)
+      cursor == 0 ? ::Instagram.user_follows(uid) : ::Instagram.user_follows(uid, :cursor => cursor)
     end
-
-    def self.add_follows_as_users(uid)
-      cursor = 0
-
-      while cursor.present? do
-        follows = get_page_of_follows(uid, cursor)
-        follows.each {|f| save_as_user(f) }
-        cursor = follows.pagination.next_cursor
-        puts "!!!!!!!!!! #{cursor}"
-      end
-    end
-
 
     def self.follow(uid)
       config

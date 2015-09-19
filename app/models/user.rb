@@ -65,7 +65,12 @@ class User < ActiveRecord::Base
 
   def add_follows_as_users!
     begin
-      Instafollow::Instagram.add_follows_as_users(uid)
+      Instafollow::Instagram.add_follows_as_users(uid).each do |instagram_user|
+        u = User.where(uid: instagram_user["id"]).first_or_initialize
+        u.full_name = instagram_user["full_name"]
+        u.username = instagram_user["username"]
+        u.save
+      end
     rescue
       # the error is probably Instagram::BadRequest meaning
       # I can't get this users followers. I'm ok with ignoring this for now
